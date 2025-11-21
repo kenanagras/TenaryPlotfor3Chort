@@ -1,0 +1,40 @@
+install.packages("ggtern")   
+install.packages("dplyr")
+library(ggtern)
+library(readxl)
+library(dplyr)
+
+# Read Excel
+data <- read_excel("C:/Users/pc/Desktop/TNRv1.xlsx")
+
+hulls <- data %>%
+  group_by(Taxson) %>%
+  slice(chull(`Old-adult`, Juvenile))   # just 2D
+
+# Ternary plot
+ggtern(data = data,
+       aes(x = `Old-adult`, y = Juvenile, z = `Prime-adult`,
+           color = Taxson, shape = Taxson)) +
+  # Add a period label next to the dots
+  geom_text(aes(label = Period),
+            size = 3,
+            vjust = -0.5,  # vertical position setting
+            hjust = 0.5,   # horizontal position setting
+            color = "black",
+            show.legend = FALSE) +
+  
+  geom_point(size = 3, alpha = 0.9) +
+  geom_polygon(data = hulls,
+               aes(fill = Taxson, color = Taxson),
+               alpha = 0.25, show.legend = FALSE) +
+  theme_bw() +
+  labs(
+    title = "Ternary plot",
+    T = "Old-adult",
+    L = "Juvenile",
+    R = "Prime-adult",
+    color = "Taxson",
+    shape = "Taxson"
+  ) +
+  theme_showarrows() +
+  theme(legend.position = "right")
